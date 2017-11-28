@@ -22,7 +22,16 @@
         }
         else
         {
-        $query = "INSERT INTO Tester (Username, Password) VALUES ('$username', '$password')";
+        $passwordBHash = $password;
+        $iterations = 1000;
+
+        // Generate a random IV using openssl_random_pseudo_bytes()
+        // random_bytes() or another suitable source of randomness
+        $salt = openssl_random_pseudo_bytes(16);
+
+        $hash = hash_pbkdf2("sha256", $passwordBHash, $salt, $iterations, 20);
+
+        $query = "INSERT INTO Tester (Username, hashedPassword, Salt) VALUES         ('$username', '$hash', '$salt')";
         $result = mysqli_query($db,$query);
         header("location:Login.php");
         }

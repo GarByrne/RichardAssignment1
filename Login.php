@@ -9,9 +9,9 @@
       $myusername = mysqli_real_escape_string($db,$_POST['username']);
       $mypassword = mysqli_real_escape_string($db,$_POST['password']); 
       
-      $sql = "SELECT id FROM Tester WHERE Username = '$myusername' and Password = '$mypassword'";
+      $sql = "SELECT id FROM Tester WHERE Username = '$myusername' and hashedPassword = '$mypassword'";
       $result = mysqli_query($db,$sql);
-      $row = mysqli_fetch_array($result,MYSQLI_ASSOC);
+     // $row = mysqli_fetch_array($result,MYSQLI_ASSOC);
       
       $count = mysqli_num_rows($result);
         echo $count;
@@ -64,7 +64,7 @@
                   <label>UserName  :</label><input type = "text" name = "username" class = "box"/><br /><br />
                   <label>Password  :</label><input type = "password" name = "password" class = "box" /><br/><br />
                   <input type = "submit" value = " Submit "/>
-                  <input type = "button" value = " Registration " onclick="window.location.href='/TEST/Register.php'"/><br />  
+                  <input type = "button" value = " Registration " onclick="window.location.href='Register.php'"/><br />  
                </form>
                
                <div style = "font-size:11px; color:#cc0000; margin-top:10px"><?php echo $error; ?></div> 
