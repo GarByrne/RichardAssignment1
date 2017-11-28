@@ -1,6 +1,8 @@
 <?php
    include('config.php');
    session_start();
+
+   $countLog = 0;
    
    $user_check = $_SESSION['login_user'];
    

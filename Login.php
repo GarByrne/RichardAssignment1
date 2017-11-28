@@ -9,9 +9,22 @@
       $myusername = mysqli_real_escape_string($db,$_POST['username']);
       $mypassword = mysqli_real_escape_string($db,$_POST['password']); 
       
-      $sql = "SELECT id FROM Tester WHERE Username = '$myusername' and hashedPassword = '$mypassword'";
-      $result = mysqli_query($db,$sql);
-     // $row = mysqli_fetch_array($result,MYSQLI_ASSOC);
+      $iterations = 1000;
+
+      // Generate a random IV using openssl_random_pseudo_bytes()
+      // random_bytes() or another suitable source of randomness
+      $salt = "SELECT Salt FROM Tester WHERE Username = '$myusername'";
+      $saltReturn = mysqli_query($db,$salt);
+      $row = mysqli_fetch_all($saltReturn,MYSQLI_ASSOC);
+
+      $returned =  $row[0]['Salt'];
+
+      $hash = hash_pbkdf2("sha256", $mypassword, $returned, $iterations, 20);
+echo $hash;
+
+      $sql = "SELECT id FROM Tester WHERE Username = '$myusername' and hashedPassword = '$hash'";
+     $result = mysqli_query($db,$sql);
+
       
       $count = mysqli_num_rows($result);
         echo $count;
