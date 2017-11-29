@@ -2,14 +2,34 @@
    include("config.php");
    session_start();
    $error = '';
-   
-   if($_SERVER["REQUEST_METHOD"] == "POST") {
+
+if($_SERVER["REQUEST_METHOD"] == "POST") {
+
+   $ip = $_SERVER['REMOTE_ADDR'];
+   mysqli_query($db, "INSERT INTO `IP` (`address` ,`timestamp`) VALUES ('$ip',CURRENT_TIMESTAMP)");
+   $result = mysqli_query($db, "SELECT COUNT(*) FROM `IP` WHERE `address` LIKE '$ip' AND `timestamp` > (now() - interval 5 minute) AND inActive = 'True'");
+   $count = mysqli_fetch_array($result, MYSQLI_NUM);
+   echo $count[0];
+   if($count[0] > 3){
+  echo "Your are allowed 3 attempts in 10 minutes";
+}
+else{
+
       // username and password sent from form 
       
       $myusername = mysqli_real_escape_string($db,$_POST['username']);
       $mypassword = mysqli_real_escape_string($db,$_POST['password']); 
-      
       $iterations = 1000;
+
+      $nameResult = mysqli_query($db,"SELECT id FROM Tester WHERE Username = '$myusername'");      
+      $nameCount = mysqli_num_rows($nameResult);
+      
+      if($nameCount == 1)
+{
+
+      $updateInactive = "UPDATE IP SET inActive = 'False' WHERE address = '$ip'";
+      $result = mysqli_query($db,$updateInactive);
+
 
       // Generate a random IV using openssl_random_pseudo_bytes()
       // random_bytes() or another suitable source of randomness
@@ -20,14 +40,12 @@
       $returned =  $row[0]['Salt'];
 
       $hash = hash_pbkdf2("sha256", $mypassword, $returned, $iterations, 20);
-echo $hash;
 
       $sql = "SELECT id FROM Tester WHERE Username = '$myusername' and hashedPassword = '$hash'";
-     $result = mysqli_query($db,$sql);
+      $result = mysqli_query($db,$sql);
 
       
       $count = mysqli_num_rows($result);
-        echo $count;
       
       // If result matched $myusername and $mypassword, table row must be 1 row
 		
@@ -39,6 +57,20 @@ echo $hash;
       }else {
          $error = "Your Login Name or Password is invalid";
       }
+}
+	   else {
+         $error = "Your Login Name or Password is invalid";
+      }
+
+}
+
+
+
+
+
+
+
+
    }
 ?>
 <html>
