@@ -6,18 +6,19 @@
 if($_SERVER["REQUEST_METHOD"] == "POST") {
 
    $ip = $_SERVER['REMOTE_ADDR'];
+
    mysqli_query($db, "INSERT INTO `IP` (`address` ,`timestamp`) VALUES ('$ip',CURRENT_TIMESTAMP)");
    $result = mysqli_query($db, "SELECT COUNT(*) FROM `IP` WHERE `address` LIKE '$ip' AND `timestamp` > (now() - interval 5 minute) AND inActive = 'True'");
+   //$result = mysqli_query($db, "SELECT COUNT(*) FROM 'IP' WHERE 'address' = $ip AND 'timestamp'  > (now() - interval 5 minute) ");
    $count = mysqli_fetch_array($result, MYSQLI_NUM);
    echo $count[0];
    if($count[0] > 3){
-  echo "Your are allowed 3 attempts in 10 minutes";
+   echo "Your are allowed 3 attempts in 10 minutes";
 }
 else{
-
       // username and password sent from form 
-      
-      $myusername = mysqli_real_escape_string($db,$_POST['username']);
+
+      $myusername = filter_var($_POST['username'],FILTER_SANITIZE_STRING);
       $mypassword = mysqli_real_escape_string($db,$_POST['password']); 
       $iterations = 1000;
 
@@ -26,10 +27,6 @@ else{
       
       if($nameCount == 1)
 {
-
-      $updateInactive = "UPDATE IP SET inActive = 'False' WHERE address = '$ip'";
-      $result = mysqli_query($db,$updateInactive);
-
 
       // Generate a random IV using openssl_random_pseudo_bytes()
       // random_bytes() or another suitable source of randomness
@@ -55,11 +52,11 @@ else{
          
          header("location: welcome.php");
       }else {
-         $error = "Your Login Name or Password is invalid";
+         $error = "Your Username($myusername) or Password is invalid";
       }
 }
 	   else {
-         $error = "Your Login Name or Password is invalid";
+         $error = "Your Username($myusername) or Password is invalid";
       }
 
 }
