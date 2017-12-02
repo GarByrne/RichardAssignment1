@@ -14,7 +14,7 @@
         {
         echo "Username already exists";
         }
-        elseif((!preg_match("#.*^(?=.{8,20})(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*\W).*$#", $password)))
+        elseif((!preg_match("#.*^(?=.{8,})(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*\W).*$#", $password)))
         {
         echo "Password not complex enough";
         }
@@ -25,16 +25,14 @@
 
         // Generate a random IV using openssl_random_pseudo_bytes()
         // random_bytes() or another suitable source of randomness
-        $salt = openssl_random_pseudo_bytes(16);
+        $salt = openssl_random_pseudo_bytes(256);
 
-        $hash = hash_pbkdf2("sha256", $passwordBHash, $salt, $iterations, 20);
+        $hash = hash_pbkdf2("sha256", $passwordBHash, $salt, $iterations, 256);
 
-        $query = "INSERT INTO Tester (Username, hashedPassword, Salt) VALUES         ('$username', '$hash', '$salt')";
+        $query = "INSERT INTO Tester (Username, hashedPassword, Salt) VALUES  ('$username', '$hash', '$salt')";
         $result = mysqli_query($db,$query);
         header("location:Login.php");
         }
- 
-
     }
    }
 ?>

@@ -11,13 +11,11 @@
         $username = $login_session;
         echo $username;
 
-        //$query1 = mysqli_query($db,"SELECT Password FROM Tester WHERE Username = '$username'");
-
         if ($login1 != $password1)
         {
         echo "Password does not match";
         }
-        elseif((!preg_match("#.*^(?=.{8,20})(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*\W).*$#", $password2)))
+        elseif((!preg_match("#.*^(?=.{8,})(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*\W).*$#", $password2)))
         {
         echo "Password not complex enough";
         }
