@@ -6,8 +6,15 @@
     if($_SERVER["REQUEST_METHOD"] == "POST")
         {
             $ip = $_SERVER['REMOTE_ADDR'];
+            $userAgent = $_SERVER['HTTP_USER_AGENT'];
 
-            $result = mysqli_query($db,"SELECT COUNT(address) AS Count FROM IP WHERE address = '$ip' AND `timestamp` > (now() - interval 5 minute) AND inActive = True");
+            $hashOfUser = $ip . $userAgent;
+            $iterations = 1000;
+
+            $salt = "salty";
+            $hash = hash_pbkdf2("sha256", $hashOfUser, $salt, $iterations, 32);
+
+            $result = mysqli_query($db,"SELECT COUNT(hashedUserAgentIP) AS Count FROM IP WHERE hashedUserAgentIP = '$hash' AND `timestamp` > (now() - interval 5 minute) AND inActive = True");
             $row = mysqli_fetch_all($result,MYSQLI_ASSOC);
 
             if($row[0]['Count'] >= 3)
@@ -16,7 +23,7 @@
                 }
             else
                 {
-                    mysqli_query($db, "INSERT INTO `IP` (`address` ,`timestamp`) VALUES ('$ip',CURRENT_TIMESTAMP)");
+                    mysqli_query($db, "INSERT INTO `IP` (`hashedUserAgentIP` ,`timestamp`) VALUES ('$hash',CURRENT_TIMESTAMP)");
                     $myusername = filter_var($_POST['username'],FILTER_SANITIZE_STRING);
                     $mypassword = mysqli_real_escape_string($db,$_POST['password']);
 
@@ -35,11 +42,9 @@
 
                     $array =  explode( '$', $returned );
 
-                    //$returned =  $row[0]['Salt'];
                     $iterations = 1000;
                     $hash = hash_pbkdf2("sha256", $mypassword, $array[1], $iterations, 32);
                     $saltyHash = '$' . $array[1] . '$' . $hash;
-                    echo $hash;
 
                     $sql = "SELECT id FROM Tester WHERE Username = '$myusername' and hashedPassword = '$saltyHash'";
                     $result = mysqli_query($db,$sql);

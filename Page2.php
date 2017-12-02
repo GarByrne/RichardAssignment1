@@ -43,10 +43,9 @@
           $salt = random_bytes(32);
           $hash = hash_pbkdf2("sha256", $passwordBHash, $salt, $iterations, 32);
           $saltHash = '$' . $salt . '$' . $hash;
-          echo $saltHash;
         $query = "UPDATE Tester SET hashedPassword = '$saltHash' WHERE Username = '$login_session'";
         $result = mysqli_query($db,$query);
-        //header("location:Logout.php");
+        header("location:Logout.php");
         }
 
 
