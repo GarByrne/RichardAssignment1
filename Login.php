@@ -7,18 +7,12 @@
         {
             $ip = $_SERVER['REMOTE_ADDR'];
 
-          //$result = mysqli_query($db, "SELECT COUNT(*) FROM `IP` WHERE `address` LIKE '$ip' AND `timestamp` > (now() - interval 5 minute) AND inActive = 'True'");
-            //$result = mysqli_query($db, "SELECT address, COUNT(*) FROM IP WHERE address = '$ip' AND inActive = 'True'");
-            $result = mysqli_query($db,"SELECT COUNT(address) AS Count FROM IP WHERE address = '$ip'");
+            $result = mysqli_query($db,"SELECT COUNT(address) AS Count FROM IP WHERE address = '$ip' AND `timestamp` > (now() - interval 5 minute) AND inActive = True");
             $row = mysqli_fetch_all($result,MYSQLI_ASSOC);
 
-          //  $count = mysqli_num_rows($result);
-          //  $count = mysqli_fetch_array($result, MYSQLI_NUM);
-          //  $count = 5;
-            echo $row[0]['Count'];
             if($row[0]['Count'] >= 3)
                 {
-                    echo "Your are allowed 3 attempts in 10 minutes";
+                    echo "Your are allowed 3 attempts in 5 minutes";
                 }
             else
                 {
