@@ -25,12 +25,11 @@
 
         // Generate a random IV using openssl_random_pseudo_bytes()
         // random_bytes() or another suitable source of randomness
-        $salt = openssl_random_pseudo_bytes(256);
-
-        $hash = hash_pbkdf2("sha256", $passwordBHash, $salt, $iterations, 256);
-
-        $query = "INSERT INTO Tester (Username, hashedPassword, Salt) VALUES  ('$username', '$hash', '$salt')";
-        $result = mysqli_query($db,$query);
+        $salt = random_bytes(32);
+        $hash = hash_pbkdf2("sha256", $passwordBHash, $salt, $iterations, 32);
+        $saltHash = '$' . $salt . '$' . $hash;
+        $query4 = "INSERT INTO Tester (Username, hashedPassword) VALUES  ('$username', '$saltHash')";
+        $result = mysqli_query($db,$query4);
         header("location:Login.php");
         }
     }

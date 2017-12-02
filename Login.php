@@ -19,7 +19,6 @@
                     mysqli_query($db, "INSERT INTO `IP` (`address` ,`timestamp`) VALUES ('$ip',CURRENT_TIMESTAMP)");
                     $myusername = filter_var($_POST['username'],FILTER_SANITIZE_STRING);
                     $mypassword = mysqli_real_escape_string($db,$_POST['password']);
-                    $iterations = 1000;
 
                     $nameResult = mysqli_query($db,"SELECT id FROM Tester WHERE Username = '$myusername'");
                     $nameCount = mysqli_num_rows($nameResult);
@@ -28,24 +27,33 @@
                 {
                     // Generate a random IV using openssl_random_pseudo_bytes()
                     // random_bytes() or another suitable source of randomness
-                    $salt = "SELECT Salt FROM Tester WHERE Username = '$myusername'";
+                    $salt = "SELECT hashedPassword FROM Tester WHERE Username = '$myusername'";
                     $saltReturn = mysqli_query($db,$salt);
                     $row = mysqli_fetch_all($saltReturn,MYSQLI_ASSOC);
 
-                    $returned =  $row[0]['Salt'];
+                    $returned =  $row[0]['hashedPassword'];
 
-                    $hash = hash_pbkdf2("sha256", $mypassword, $returned, $iterations, 256);
+                    $array =  explode( '$', $returned );
 
-                    $sql = "SELECT id FROM Tester WHERE Username = '$myusername' and hashedPassword = '$hash'";
+                    //$returned =  $row[0]['Salt'];
+                    $iterations = 1000;
+                    $hash = hash_pbkdf2("sha256", $mypassword, $array[1], $iterations, 32);
+                    $saltyHash = '$' . $array[1] . '$' . $hash;
+                    echo $hash;
+
+                    $sql = "SELECT id FROM Tester WHERE Username = '$myusername' and hashedPassword = '$saltyHash'";
                     $result = mysqli_query($db,$sql);
                     $count = mysqli_num_rows($result);
+                    echo $count;
 
                     // If result matched $myusername and $mypassword, table row must be 1 row
                     $query = "UPDATE IP SET inActive = False ";
                     $result = mysqli_query($db,$query);
 
-                    $_SESSION['login_user'] = $myusername;
-                    header("location: welcome.php");
+                    if($count == 1) {
+                    			$_SESSION['login_user'] = $myusername;
+                    			header("location: welcome.php");
+                    		}
               }
           else
               {
