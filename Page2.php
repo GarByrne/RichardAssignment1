@@ -1,55 +1,43 @@
 <?php
-   include("config.php");
-   include("session.php");
+include("config.php");
+include("session.php");
 
-   if($_SERVER["REQUEST_METHOD"] == "POST") {
+if($_SERVER["REQUEST_METHOD"] == "POST") 
+    {
+        if (isset($_POST['password1']) && isset($_POST['password2']))
+            {
+                $password1 = $_POST['password1'];
+                $password2 = $_POST['password2'];
+                $username = $login_session;
 
-    if (isset($_POST['password1']) && isset($_POST['password2'])){
+                $saltReturn = mysqli_query($db,"SELECT hashedPassword FROM tester WHERE Username = '$username'");
+                $row = mysqli_fetch_all($saltReturn,MYSQLI_ASSOC);
+                $returned =  $row[0]['hashedPassword'];
+                $array =  explode('$', $returned );
 
-        $password1 = $_POST['password1'];
-        $password2 = $_POST['password2'];
-        $username = $login_session;
+                $iterations = 1000;
+                $hash = hash_pbkdf2("sha256", $password1, $array[1], $iterations, 32);
+                $saltyHash = '$' . $array[1] . '$' . $hash;
 
-        $salt = "SELECT hashedPassword FROM Tester WHERE Username = '$username'";
-        $saltReturn = mysqli_query($db,$salt);
-        $row = mysqli_fetch_all($saltReturn,MYSQLI_ASSOC);
+                if ($login1 != $saltyHash)
+                    {
+                        echo "Password does not match";
+                    }
+                elseif((!preg_match("#.*^(?=.{8,})(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*\W).*$#", $password2)))
+                    {
+                        echo "Password not complex enough";
+                    }
+                else
+                    {
+                        $passwordBHash = $password2;
 
-        $returned =  $row[0]['hashedPassword'];
-
-        $array =  explode( '$', $returned );
-
-        //$returned =  $row[0]['Salt'];
-        $iterations = 1000;
-        $hash = hash_pbkdf2("sha256", $password1, $array[1], $iterations, 32);
-        $saltyHash = '$' . $array[1] . '$' . $hash;
-
-
-
-        if ($login1 != $saltyHash)
-        {
-        echo "Password does not match";
-        }
-        elseif((!preg_match("#.*^(?=.{8,})(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*\W).*$#", $password2)))
-        {
-        echo "Password not complex enough";
-        }
-        else
-        {
-          $passwordBHash = $password2;
-          $iterations = 1000;
-
-          // Generate a random IV using openssl_random_pseudo_bytes()
-          // random_bytes() or another suitable source of randomness
-          $salt = random_bytes(32);
-          $hash = hash_pbkdf2("sha256", $passwordBHash, $salt, $iterations, 32);
-          $saltHash = '$' . $salt . '$' . $hash;
-        $query = "UPDATE Tester SET hashedPassword = '$saltHash' WHERE Username = '$login_session'";
-        $result = mysqli_query($db,$query);
-        header("location:Logout.php");
-        }
-
-
-    }
+                        $salt = random_bytes(32);
+                        $hash = hash_pbkdf2("sha256", $passwordBHash, $salt, $iterations, 32);
+                        $saltHash = '$' . $salt . '$' . $hash;
+                        $result = mysqli_query($db,"UPDATE tester SET hashedPassword = '$saltHash' WHERE Username = '$login_session'");
+                        header("location:Logout.php");
+                    }
+            }
    }
 ?>
 <html>

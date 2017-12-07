@@ -6,8 +6,8 @@
 
    $user_check = $_SESSION['login_user'];
 
-   $ses_sql = mysqli_query($db,"select Username from Tester where Username = '$user_check' ");
-   $ses1 = mysqli_query($db,"select hashedPassword from Tester where Username = '$user_check' ");
+   $ses_sql = mysqli_query($db,"select Username from tester where Username = '$user_check' ");
+   $ses1 = mysqli_query($db,"select hashedPassword from tester where Username = '$user_check' ");
 
    $row = mysqli_fetch_array($ses_sql,MYSQLI_ASSOC);
    $col = mysqli_fetch_array($ses1,MYSQLI_ASSOC);

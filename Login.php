@@ -1,71 +1,71 @@
 <?php
-    include("config.php");
-    session_start();
-    $error = '';
+include("config.php");
+session_start();
+$error = '';
 
-    if($_SERVER["REQUEST_METHOD"] == "POST")
-        {
-            $ip = $_SERVER['REMOTE_ADDR'];
-            $userAgent = $_SERVER['HTTP_USER_AGENT'];
+if($_SERVER["REQUEST_METHOD"] == "POST")
+    {
+        $ip = $_SERVER['REMOTE_ADDR'];
+        $userAgent = $_SERVER['HTTP_USER_AGENT'];
 
-            $hashOfUser = $ip . $userAgent;
-            $iterations = 1000;
+        $hashOfUser = $ip . $userAgent;
+        $iterations = 1000;
 
-            $salt = "salty";
-            $hash = hash_pbkdf2("sha256", $hashOfUser, $salt, $iterations, 32);
+        $salt = "salty";
+        $hash = hash_pbkdf2("sha256", $hashOfUser, $salt, $iterations, 32);
 
-            $result = mysqli_query($db,"SELECT COUNT(hashedUserAgentIP) AS Count FROM IP WHERE hashedUserAgentIP = '$hash' AND `timestamp` > (now() - interval 5 minute) AND inActive = True");
-            $row = mysqli_fetch_all($result,MYSQLI_ASSOC);
+        $result = mysqli_query($db,"SELECT COUNT(hashedUserAgentIP) AS Count FROM ip WHERE hashedUserAgentIP = '$hash' AND `timestamp` > (now() - interval 5 minute) AND inActive = True");
+        $row = mysqli_fetch_all($result,MYSQLI_ASSOC);
 
-            if($row[0]['Count'] >= 3)
-                {
-                    echo "Your are allowed 3 attempts in 5 minutes";
-                }
-            else
-                {
-                    mysqli_query($db, "INSERT INTO `IP` (`hashedUserAgentIP` ,`timestamp`) VALUES ('$hash',CURRENT_TIMESTAMP)");
-                    $myusername = filter_var($_POST['username'],FILTER_SANITIZE_STRING);
-                    $mypassword = mysqli_real_escape_string($db,$_POST['password']);
+        if($row[0]['Count'] >= 3)
+            {
+                echo "Your are allowed 3 attempts in 5 minutes";
+            }
+        else
+            {
+                mysqli_query($db, "INSERT INTO `ip` (`hashedUserAgentIP` ,`timestamp`) VALUES ('$hash',CURRENT_TIMESTAMP)");
+                $myusername = filter_var($_POST['username'],FILTER_SANITIZE_STRING);
+                $mypassword = mysqli_real_escape_string($db,$_POST['password']);
 
-                    $nameResult = mysqli_query($db,"SELECT id FROM Tester WHERE Username = '$myusername'");
-                    $nameCount = mysqli_num_rows($nameResult);
+                $salt = "SELECT hashedPassword FROM tester WHERE Username = '$myusername'";
+                $saltReturn = mysqli_query($db,$salt);
+                $row = mysqli_fetch_all($saltReturn,MYSQLI_ASSOC);
+                    
+                $arr = (array)$row;
+                if (empty($arr)) 
+                    {
+   
+                    }
+                else
+                    {
+                        $returned = $row[0]['hashedPassword'];
+                        $array =  explode( '$', $returned );
+                        $iterations = 1000;
+                        $hash = hash_pbkdf2("sha256", $mypassword, $array[1], $iterations, 32);
+                        $saltyHash = '$' . $array[1] . '$' . $hash;
+                        $nameResult = mysqli_query($db,"SELECT id FROM tester WHERE Username = '$myusername' and hashedPassword = '$saltyHash'");
+                        $nameCount = mysqli_num_rows($nameResult);
+                        
+                        if($nameCount == 1)
+                            {
+                                $result = mysqli_query($db,"SELECT id FROM tester WHERE Username = '$myusername' and hashedPassword = '$saltyHash'");
+                                $count = mysqli_num_rows($result);
+                                $query = "UPDATE ip SET inActive = False ";
+                                $result = mysqli_query($db,$query);
 
-           if($nameCount == 1)
-                {
-                    // Generate a random IV using openssl_random_pseudo_bytes()
-                    // random_bytes() or another suitable source of randomness
-                    $salt = "SELECT hashedPassword FROM Tester WHERE Username = '$myusername'";
-                    $saltReturn = mysqli_query($db,$salt);
-                    $row = mysqli_fetch_all($saltReturn,MYSQLI_ASSOC);
-
-                    $returned =  $row[0]['hashedPassword'];
-
-                    $array =  explode( '$', $returned );
-
-                    $iterations = 1000;
-                    $hash = hash_pbkdf2("sha256", $mypassword, $array[1], $iterations, 32);
-                    $saltyHash = '$' . $array[1] . '$' . $hash;
-
-                    $sql = "SELECT id FROM Tester WHERE Username = '$myusername' and hashedPassword = '$saltyHash'";
-                    $result = mysqli_query($db,$sql);
-                    $count = mysqli_num_rows($result);
-                    echo $count;
-
-                    // If result matched $myusername and $mypassword, table row must be 1 row
-                    $query = "UPDATE IP SET inActive = False ";
-                    $result = mysqli_query($db,$query);
-
-                    if($count == 1) {
-                    			$_SESSION['login_user'] = $myusername;
-                    			header("location: welcome.php");
-                    		}
-              }
-          else
-              {
-                $error = "Your Username($myusername) or Password is invalid";
-              }
-              }
-      }
+                                if($count == 1) 
+                                    {
+                    			         $_SESSION['login_user'] = $myusername;
+                    			         header("location: welcome.php");
+                                    }
+                                else
+                                    {
+                                        $error = "Your Username($myusername) or Password is invalid";
+                                    }
+                            }
+                    }
+            }
+    }
 ?>
 <html>
 
@@ -99,7 +99,7 @@
 
             <div style = "margin:30px">
 
-               <form action = "" method = "post">
+               <form action = "" method = "post" autocomplete = "off">
                   <label>UserName  :</label><input type = "text" name = "username" class = "box"/><br /><br />
                   <label>Password  :</label><input type = "password" name = "password" class = "box" /><br/><br />
                   <input type = "submit" value = " Submit "/>

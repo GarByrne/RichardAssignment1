@@ -1,38 +1,31 @@
 <?php
-   include("config.php");
+include("config.php");
 
-   if($_SERVER["REQUEST_METHOD"] == "POST") {
+if($_SERVER["REQUEST_METHOD"] == "POST") 
+    {
+        if (isset($_POST['username']) && isset($_POST['password']))
+            {
+                $username = $_POST['username'];
+                $password = $_POST['password'];
 
-    if (isset($_POST['username']) && isset($_POST['password'])){
-
-        $username = $_POST['username'];
-        $password = $_POST['password'];
-
-        $query1 = mysqli_query($db,"SELECT Username FROM Tester WHERE Username='$username'");
-
-        if (mysqli_num_rows($query1) != 0)
-        {
-        echo "Username already exists";
-        }
-        elseif((!preg_match("#.*^(?=.{8,20})(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*\W).*$#", $password)))
-        {
-        echo "Password not complex enough";
-        }
-        else
-        {
-        $passwordBHash = $password;
-        $iterations = 1000;
-
-        // Generate a random IV using openssl_random_pseudo_bytes()
-        // random_bytes() or another suitable source of randomness
-        $salt = random_bytes(32);
-        $hash = hash_pbkdf2("sha256", $passwordBHash, $salt, $iterations, 32);
-        $saltHash = '$' . $salt . '$' . $hash;
-        $query4 = "INSERT INTO Tester (Username, hashedPassword) VALUES  ('$username', '$saltHash')";
-        $result = mysqli_query($db,$query4);
-        header("location:Login.php");
-        }
-    }
+                if (mysqli_num_rows(mysqli_query($db,"SELECT Username FROM tester WHERE Username='$username'")) != 0)
+                    {
+                        echo "Username already exists";
+                    }
+                elseif((!preg_match("#.*^(?=.{8,20})(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*\W).*$#", $password)))
+                    {
+                        echo "Password not complex enough";
+                    }
+                else
+                    {
+                        $iterations = 1000;
+                        $salt = random_bytes(32);
+                        $hash = hash_pbkdf2("sha256", $password, $salt, $iterations, 32);
+                        $saltHash = '$' . $salt . '$' . $hash;
+                        $result = mysqli_query($db,"INSERT INTO tester (Username, hashedPassword) VALUES  ('$username', '$saltHash')");
+                        header("location:Login.php");
+                    }
+            }
    }
 ?>
 <html>
@@ -67,7 +60,7 @@
 
             <div style = "margin:30px">
 
-               <form action = "" method = "post">
+               <form action = "" method = "post" autocomplete = "off">
                   <label>UserName  :</label><input type = "text" name = "username" class = "box"/><br /><br />
                   <label>Password  :</label><input type = "password" name = "password" class = "box" /><br/><br />
                   <input type = "submit" value = " Submit "/><br />
