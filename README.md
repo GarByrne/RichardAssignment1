@@ -1,1 +1,0 @@
-# RichardAssignment1
