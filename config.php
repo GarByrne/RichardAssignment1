@@ -1,5 +1,4 @@
 <?php
-echo "dgsd";
 $user = 'root';
 $pass = '';
 $db = 'garryb';
