@@ -30,7 +30,6 @@ if($_SERVER["REQUEST_METHOD"] == "POST")
                 else
                     {
                         $passwordBHash = $password2;
-
                         $salt = random_bytes(32);
                         $hash = hash_pbkdf2("sha256", $passwordBHash, $salt, $iterations, 32);
                         $saltHash = '$' . $salt . '$' . $hash;
