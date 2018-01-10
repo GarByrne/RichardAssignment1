@@ -1,5 +1,8 @@
+
+
 <?php
    include("session.php");
+// page with links to Password change and to logout
 ?>
 <html>
    
