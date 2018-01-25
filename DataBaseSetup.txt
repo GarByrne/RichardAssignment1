@@ -1,0 +1,6 @@
+Database Setup
+1.	In php admin click database at the top of the page.
+2.	In create database enter the name “garryb” and click create.
+3.	Then click Import at the top of the page.
+4.	Click choose file and then browse to the RichardAssignment1 folder, inside this there is a file called “garryb.sql”. Choose this file.
+5.	Scroll to the bottom of the page and click Go. This will generate the tables in the database and the web app should work as intended.

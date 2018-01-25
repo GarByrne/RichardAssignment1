@@ -1,5 +1,10 @@
 <?php
 
+header('Expires: Sun, 01 Jan 2014 00:00:00 GMT');
+header('Cache-Control: no-store, no-cache, must-revalidate');
+header('Cache-Control: post-check=0, pre-check=0', FALSE);
+header('Pragma: no-cache');
+
  // code to allow user to change their password
 include("config.php");
 include("session.php");
@@ -10,6 +15,7 @@ if($_SERVER["REQUEST_METHOD"] == "POST") // If the method is post continue
             {
                 $password1 = $_POST['password1']; // setting the variable to the old password entered
                 $password2 = $_POST['password2']; // setting the variable to the new password entered
+                $password3 = $_POST['password3']; // setting the variable to the new password entered
                 $username = $login_session; // setting the variable to the username of the currently logged in user
 
                 $saltReturn = mysqli_query($db,"SELECT hashedPassword FROM tester WHERE Username = '$username'"); // query to return the hashepassword and salt of the logged in user
@@ -27,9 +33,10 @@ if($_SERVER["REQUEST_METHOD"] == "POST") // If the method is post continue
                     }
                 elseif((!preg_match("#.*^(?=.{8,})(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*\W).*$#", $password2))) // if old password is correct checks if entered new password is >= 8 and <= 20 chars, contains a-z A-Z 0-9 and special chars(£,$ and % etc)
                     {
-                        echo "Password not complex enough"; 
+                            echo "Password not complex enough, >= 8 and <= 20 chars, contains a-z A-Z 0-9 and special chars(£,$ and % etc)";
+                            echo " eg Password14$";
                     }
-                else
+                elseif($password2 === $password3)
                     {
                         $passwordBHash = $password2; // assigns the new passowrd to the variable
                         $salt = random_bytes(32); // random series of chars are generated. The size will be 32 bytes long
@@ -37,6 +44,10 @@ if($_SERVER["REQUEST_METHOD"] == "POST") // If the method is post continue
                         $saltHash = '$' . $salt . '$' . $hash; //  Concatenating the hashed password with the salt andd dollar signs eg. $Salt$HashedPassword
                         $result = mysqli_query($db,"UPDATE tester SET hashedPassword = '$saltHash' WHERE Username = '$login_session'");
                         header("location:Logout.php"); // query to update the users stored password
+                    }
+                else
+                    {
+                        echo "Passwords do not match"; 
                     }
             }
    }
@@ -76,6 +87,7 @@ if($_SERVER["REQUEST_METHOD"] == "POST") // If the method is post continue
                <form action = "" method = "post">
                   <label>Old Password  :</label><input type = "password" name = "password1" class = "box" /><br/><br />
                   <label>New Password  :</label><input type = "password" name = "password2" class = "box" /><br/><br />
+                  <label>Re-enter New Password  :</label><input type = "password" name = "password3" class = "box" /><br/><br />
                   <input type = "submit" value = " Submit "/><br />
                </form>
 

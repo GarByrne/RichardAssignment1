@@ -1,4 +1,11 @@
 <?php
+
+header('Expires: Sun, 01 Jan 2014 00:00:00 GMT');
+header('Cache-Control: no-store, no-cache, must-revalidate');
+header('Cache-Control: post-check=0, pre-check=0', FALSE);
+header('Pragma: no-cache');
+
+
 include("config.php");
 session_start(); // starts a session
 $error = ''; // variable to hold error message 
@@ -23,7 +30,7 @@ if($_SERVER["REQUEST_METHOD"] == "POST") // If the method is post continue
             }
         else
             {
-                mysqli_query($db, "INSERT INTO `ip` (`hashedUserAgentIP` ,`timestamp`) VALUES ('$hash',CURRENT_TIMESTAMP)"); // query to insert the hashed useragent+ip into the database
+                mysqli_query($db, "INSERT INTO `ip` (`hashedUserAgentIP` ,`timestamp`, `inActiveReg`) VALUES ('$hash',CURRENT_TIMESTAMP, 'False')"); // query to insert the hashed useragent+ip into the database
                 $myusername = filter_var($_POST['username'],FILTER_SANITIZE_STRING); // takes the entered username and Strip tags thenand assigns it to a variable
                 $mypassword = mysqli_real_escape_string($db,$_POST['password']); //filters out special characters in a string and assigns to a variable
 

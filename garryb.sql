@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Jan 11, 2018 at 12:04 PM
+-- Generation Time: Jan 25, 2018 at 07:20 PM
 -- Server version: 10.1.28-MariaDB
 -- PHP Version: 7.1.11
 
@@ -32,17 +32,27 @@ CREATE TABLE `ip` (
   `id` int(11) NOT NULL,
   `hashedUserAgentIP` varchar(200) CHARACTER SET utf8 NOT NULL,
   `timestamp` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  `inActive` tinyint(1) NOT NULL DEFAULT '1'
+  `inActive` tinyint(1) NOT NULL DEFAULT '1',
+  `inActiveReg` tinyint(1) NOT NULL DEFAULT '1'
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 --
 -- Dumping data for table `ip`
 --
 
-INSERT INTO `ip` (`id`, `hashedUserAgentIP`, `timestamp`, `inActive`) VALUES
-(129, '1435c18a0f03f385be1abbbe37f45666', '2017-12-08 13:10:07', 0),
-(130, '1435c18a0f03f385be1abbbe37f45666', '2017-12-08 17:52:26', 0),
-(131, '1435c18a0f03f385be1abbbe37f45666', '2017-12-08 17:53:28', 0);
+INSERT INTO `ip` (`id`, `hashedUserAgentIP`, `timestamp`, `inActive`, `inActiveReg`) VALUES
+(196, '9c7355ae2a6f6d9d07d4e87fea45d55a', '2018-01-25 17:26:08', 0, 0),
+(197, '9c7355ae2a6f6d9d07d4e87fea45d55a', '2018-01-25 17:26:11', 0, 0),
+(200, '9c7355ae2a6f6d9d07d4e87fea45d55a', '2018-01-25 17:29:43', 0, 0),
+(201, '9c7355ae2a6f6d9d07d4e87fea45d55a', '2018-01-25 17:49:46', 1, 0),
+(202, '9c7355ae2a6f6d9d07d4e87fea45d55a', '2018-01-25 17:50:56', 1, 1),
+(203, '9c7355ae2a6f6d9d07d4e87fea45d55a', '2018-01-25 17:53:44', 0, 1),
+(205, '9c7355ae2a6f6d9d07d4e87fea45d55a', '2018-01-25 17:58:34', 0, 1),
+(208, '9c7355ae2a6f6d9d07d4e87fea45d55a', '2018-01-25 18:00:15', 0, 1),
+(213, '9c7355ae2a6f6d9d07d4e87fea45d55a', '2018-01-25 18:03:41', 1, 0),
+(214, '9c7355ae2a6f6d9d07d4e87fea45d55a', '2018-01-25 18:03:43', 1, 0),
+(215, '9c7355ae2a6f6d9d07d4e87fea45d55a', '2018-01-25 18:03:45', 1, 0),
+(216, '9c7355ae2a6f6d9d07d4e87fea45d55a', '2018-01-25 18:18:05', 0, 1);
 
 -- --------------------------------------------------------
 
@@ -62,7 +72,11 @@ CREATE TABLE `tester` (
 
 INSERT INTO `tester` (`id`, `Username`, `hashedPassword`) VALUES
 (1, 'rory', '$xs§ÚÂÏR_.€2p¹MEìCà5±3˜8°PÝÆ$7f5dbc2262b66a35f6aeed3c090e500e'),
-(20, 'garry', '$M&ß|oˆXmÑ²µ§»ƒÆDmq\rê(NL¢ÒzF0 $7251ae351c9fbd5ee96f52a9f3f47dab');
+(36, 'barry', '$X(Ü™óàðç\rUÿ°?À“\0£#ÑD#¿î¼ Ò$ddc324595c5ab62d58098697514bb43e'),
+(38, 'ger', '$	rTw…(ÜqÈ]êHj7ÿÙáq„1%cFg¢B^$c4cb19d8ac058a08588d336026b32f3d'),
+(46, 'garry', '$1È9˜¤õZÁ‡7ëÙ÷¾©\n±¼¨.iîŒÜÏ¸Ú£õ$58009d6bd0509547fed52ba7489357c5'),
+(47, 'pat', '$ŽŠgÊ%RËQÑ‡X(d\0?y½I—©¶^øÿX¬Ó…É$a61853c4ab4a54143f7c7b67b5b232bb'),
+(48, 'jim', '$ 5¿o\ZU2Ç4ÛõFñïOd%šƒ‘ßzÖ*3$b0e968bda792ad8a9f2d85aebdf53fa2');
 
 --
 -- Indexes for dumped tables
@@ -88,13 +102,13 @@ ALTER TABLE `tester`
 -- AUTO_INCREMENT for table `ip`
 --
 ALTER TABLE `ip`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=150;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=217;
 
 --
 -- AUTO_INCREMENT for table `tester`
 --
 ALTER TABLE `tester`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=35;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=49;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
